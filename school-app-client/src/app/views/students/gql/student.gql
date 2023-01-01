@@ -1,0 +1,9 @@
+#import {QueryStudentArgs} from '../../generated/graphql';
+
+query getStudentWithoutPosts($data:GetStudentInput!) {
+  student(data: $data) {
+    id
+    email
+    name
+  }
+}

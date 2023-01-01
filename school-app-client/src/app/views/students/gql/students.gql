@@ -1,0 +1,7 @@
+query getStudentsWithoutPosts {
+  students {
+    id
+    email
+    name
+  }
+}

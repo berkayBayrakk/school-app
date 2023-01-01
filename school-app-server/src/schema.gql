@@ -1,0 +1,75 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Student implements IStudent {
+  id: Int!
+  email: String!
+  name: String
+  posts: [Post]!
+}
+
+"""Student interface"""
+interface IStudent {
+  id: Int!
+}
+
+type Post {
+  id: Int!
+  text: String!
+  color: String!
+  studentId: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  student: Student
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  posts: [Post!]!
+  post(id: Int!): Post!
+  students: [Student!]!
+  student(data: GetStudentInput!): Student!
+  studentsSearch(name: String, email: String, isInsensitive: Boolean = true): [Student!]!
+}
+
+input GetStudentInput {
+  id: Int
+  name: String
+}
+
+type Mutation {
+  createPost(data: CreatePostInput!): Post!
+  updatePost(data: UpdatePostInput!): Post!
+  deletePost(id: Int!): Post!
+  createStudent(data: CreateStudentInput!): Student!
+  deleteStudent(id: Int!): Student!
+}
+
+input CreatePostInput {
+  id: Int
+  text: String!
+  color: COLOR!
+  studentId: Int!
+}
+
+enum COLOR {
+  Red
+  Blue
+  White
+}
+
+input UpdatePostInput {
+  id: Int
+  text: String!
+  color: COLOR!
+}
+
+input CreateStudentInput {
+  email: String!
+  name: String!
+}

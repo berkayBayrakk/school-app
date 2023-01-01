@@ -1,0 +1,11 @@
+query getStudentPosts($data: GetStudentInput!) {
+  student(data: $data) {
+    posts {
+      color
+      updatedAt
+      createdAt
+      id
+      text
+    }
+  }
+}
