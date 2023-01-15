@@ -28,7 +28,8 @@
     "prisma:studio": "npx prisma studio",
     "prisma:generate": "npx prisma generate",
     "prisma:generate:watch": "npx prisma generate --watch",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "docker-rebuild":"docker-compose up -d --build"
   },
   "dependencies": {
     "@nestjs/apollo": "^10.1.6",

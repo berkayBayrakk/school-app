@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Args,
   Info,
@@ -16,14 +17,15 @@ import { CreateStudentInput } from './dto/createStudent.input';
 import { StudentFilterArgs } from './args/student.filter.args';
 import { StudentsFilterArgs } from './args/students.filter.args';
 import { GetStudentInput } from './dto/getStudent.input';
+import { PaginationArgs } from 'src/common/pagination/pagination.args';
 
 @Resolver(() => StudentModel)
 export class StudentResolver {
   constructor(private studentService: StudentService) {}
 
   @Query(() => [StudentModel])
-  async students() {
-    return await this.studentService.getAllStudents();
+  async students(@Args() filter: PaginationArgs) {
+    return await this.studentService.getAllStudents(filter);
   }
 
   @Query(() => StudentModel)
@@ -40,9 +42,9 @@ export class StudentResolver {
   }
 
   @ResolveField()
-  async posts(@Parent() student: StudentModel) {
+  async posts(@Parent() student: StudentModel, @Args() filter: PaginationArgs) {
     const { id } = student;
-    return this.studentService.getPostsByStudentId(id);
+    return this.studentService.getPostsByStudentId(id, filter);
   }
 
   @Mutation((returns) => StudentModel)

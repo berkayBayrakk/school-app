@@ -7,11 +7,11 @@ import { CreateStudentInput } from './dto/createStudent.input';
 import { EmailErrorType } from './model/emailError.model';
 
 import { StudentsFilterArgs } from './args/students.filter.args';
-import { objectEnumValues } from '@prisma/client/runtime';
 import { StudentModel } from './model/student.model';
 import { GetStudentInput } from './dto/getStudent.input';
 import { CacheKey, RedisCacheService } from 'src/redis/redis.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginationArgs } from 'src/common/pagination/pagination.args';
 
 @Injectable()
 export class StudentService {
@@ -24,6 +24,8 @@ export class StudentService {
     email,
     isInsensitive,
     name,
+    limit,
+    offset,
   }: StudentsFilterArgs): Promise<Student[]> {
     const obj = { equals: '' };
     const where: Prisma.StudentWhereInput = {
@@ -42,12 +44,21 @@ export class StudentService {
         },
       ],
     };
-    return await this.prisma.student.findMany({ where: where });
+    return await this.prisma.student.findMany({
+      where: where,
+      skip: offset,
+      take: limit,
+    });
   }
 
-  async getAllStudents(): Promise<StudentModel[]> {
+  async getAllStudents({
+    limit,
+    offset,
+  }: PaginationArgs): Promise<StudentModel[]> {
     const students = await this.prisma.student.findMany({
       orderBy: { id: 'asc' },
+      skip: offset,
+      take: limit,
     });
 
     return students;
@@ -87,7 +98,10 @@ export class StudentService {
     return student;
   }
 
-  async getPostsByStudentId(studentId: number): Promise<Post[]> {
+  async getPostsByStudentId(
+    studentId: number,
+    { limit, offset }: PaginationArgs,
+  ): Promise<Post[]> {
     console.log('studentId', studentId);
     const posts = await this.redisServices.get(
       { key: 'post:studentId', type: studentId.toString() },
@@ -97,7 +111,8 @@ export class StudentService {
           orderBy: { id: 'asc' },
         }),
     );
-    return posts.map((post) => {
+
+    return posts.slice((offset - 1) * limit, offset * limit).map((post) => {
       return {
         ...post,
         createdAt: new Date(post.createdAt),
