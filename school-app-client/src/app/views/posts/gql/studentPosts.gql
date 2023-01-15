@@ -1,6 +1,6 @@
-query getStudentPosts($data: GetStudentInput!) {
+query getStudentPosts($data: GetStudentInput!, $offset: Int, $limit: Int) {
   student(data: $data) {
-    posts {
+    posts(offset: $offset, limit: $limit) {
       color
       updatedAt
       createdAt

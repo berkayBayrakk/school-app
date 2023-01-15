@@ -1,5 +1,5 @@
-query getStudentsWithoutPosts {
-  students {
+query getStudentsWithoutPosts($offset: Int,$limit: Int) {
+  students(offset: $offset,limit: $limit) {
     id
     email
     name

@@ -109,10 +109,18 @@ export type QueryStudentArgs = {
 };
 
 
+export type QueryStudentsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
 export type QueryStudentsSearchArgs = {
   email?: InputMaybe<Scalars['String']>;
   isInsensitive?: InputMaybe<Scalars['Boolean']>;
+  limit?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
+  offset?: InputMaybe<Scalars['Int']>;
 };
 
 export type Student = IStudent & {
@@ -121,6 +129,12 @@ export type Student = IStudent & {
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
   posts: Array<Maybe<Post>>;
+};
+
+
+export type StudentPostsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
 };
 
 export type UpdatePostInput = {
@@ -138,6 +152,8 @@ export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __type
 
 export type GetStudentPostsQueryVariables = Exact<{
   data: GetStudentInput;
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
 }>;
 
 
@@ -171,7 +187,10 @@ export type GetStudentWithoutPostsQueryVariables = Exact<{
 
 export type GetStudentWithoutPostsQuery = { __typename?: 'Query', student: { __typename?: 'Student', id: number, email: string, name?: string | undefined } };
 
-export type GetStudentsWithoutPostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetStudentsWithoutPostsQueryVariables = Exact<{
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+}>;
 
 
 export type GetStudentsWithoutPostsQuery = { __typename?: 'Query', students: Array<{ __typename?: 'Student', id: number, email: string, name?: string | undefined }> };
@@ -213,9 +232,9 @@ export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutati
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
 export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const GetStudentPostsDocument = gql`
-    query getStudentPosts($data: GetStudentInput!) {
+    query getStudentPosts($data: GetStudentInput!, $offset: Int, $limit: Int) {
   student(data: $data) {
-    posts {
+    posts(offset: $offset, limit: $limit) {
       color
       updatedAt
       createdAt
@@ -239,6 +258,8 @@ export const GetStudentPostsDocument = gql`
  * const { data, loading, error } = useGetStudentPostsQuery({
  *   variables: {
  *      data: // value for 'data'
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
  *   },
  * });
  */
@@ -396,8 +417,8 @@ export type GetStudentWithoutPostsQueryHookResult = ReturnType<typeof useGetStud
 export type GetStudentWithoutPostsLazyQueryHookResult = ReturnType<typeof useGetStudentWithoutPostsLazyQuery>;
 export type GetStudentWithoutPostsQueryResult = Apollo.QueryResult<GetStudentWithoutPostsQuery, GetStudentWithoutPostsQueryVariables>;
 export const GetStudentsWithoutPostsDocument = gql`
-    query getStudentsWithoutPosts {
-  students {
+    query getStudentsWithoutPosts($offset: Int, $limit: Int) {
+  students(offset: $offset, limit: $limit) {
     id
     email
     name
@@ -417,6 +438,8 @@ export const GetStudentsWithoutPostsDocument = gql`
  * @example
  * const { data, loading, error } = useGetStudentsWithoutPostsQuery({
  *   variables: {
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
  *   },
  * });
  */
