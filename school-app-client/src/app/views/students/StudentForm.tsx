@@ -4,10 +4,12 @@ import {
   GetStudentsWithoutPostsDocument,
   useCreateStudentMutation,
 } from "../../../generated/graphql";
-import { alertProps } from "../../assets/interfaces/alert.interface";
 import * as yup from "yup";
 import { FieldErrorsImpl, SubmitErrorHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { alertProps, IFormStudentInputs } from "../../../interfaces";
+import { watch } from "fs";
+import TextFieldController from "../../../components/controllers/TextField";
 
 interface IFormInputs {
   name: string;
@@ -43,7 +45,7 @@ export default function StudentForm() {
     })
     .required();
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, watch, control } = useForm({
     defaultValues: { name: "", email: "" },
     resolver: yupResolver(schema),
   });
@@ -78,26 +80,20 @@ export default function StudentForm() {
           borderRadius: 2,
           fontSize: "0.875rem",
           fontWeight: "700",
+          width:250
         }}
       >
         <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
           <Stack>
-            <TextField
-              id="name"
-              name="name"
-              label="Name"
-              variant="standard"
-              ref={register("name").ref}
-              onChange={register("name").onChange}
-              onBlur={register("name").onBlur}
+            <TextFieldController<IFormStudentInputs>
+              name={register("name").name}
+              watch={watch}
+              control={control}
             />
-            <TextField
-              id="email"
-              name="email"
-              label="Email"
-              variant="standard"
-              ref={register("email").ref}
-              onChange={register("email").onChange}
+            <TextFieldController<IFormStudentInputs>
+              name={register("email").name}
+              watch={watch}
+              control={control}
             />
             <Snackbar
               open={alert.open}

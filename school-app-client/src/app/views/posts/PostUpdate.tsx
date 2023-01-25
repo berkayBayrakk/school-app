@@ -34,7 +34,7 @@ import TextSelect from "../../../components/controllers/TextField";
 import TextFieldController from "../../../components/controllers/TextField";
 import TextSelectController from "../../../components/controllers/TextSelect";
 import { COLORTYPE, COLORTYPELIST } from "../../../constants";
-import { alertProps, IFormInputs } from "../../../interfaces";
+import { alertProps, IFormPostInputs } from "../../../interfaces";
 import { updatePostType } from "./PostsView";
 
 interface postUpdateProps {
@@ -67,7 +67,7 @@ export default function PostUpdate({ updatePost,setUpdatePost }: postUpdateProps
     .required();
 
   const { register, handleSubmit, control, setValue, watch,resetField, ...rest } =
-    useForm<IFormInputs>({
+    useForm<IFormPostInputs>({
       defaultValues: { text: "", color: Color.Blue },
       resolver: yupResolver(schema),
     });
@@ -82,7 +82,7 @@ export default function PostUpdate({ updatePost,setUpdatePost }: postUpdateProps
     setAlert({ ...alert, open: false });
   };
 
-  const onSubmit = (data: IFormInputs) => {
+  const onSubmit = (data: IFormPostInputs) => {
     const updatePostInput: UpdatePostInput = {
       color: data.color ?? Color.Blue,
       text: data.text,
@@ -95,7 +95,7 @@ export default function PostUpdate({ updatePost,setUpdatePost }: postUpdateProps
     });
     
   };
-  const onInvalid: SubmitErrorHandler<IFormInputs> = (data) => {
+  const onInvalid: SubmitErrorHandler<IFormPostInputs> = (data) => {
     console.log(data);
   };
 
@@ -139,14 +139,14 @@ export default function PostUpdate({ updatePost,setUpdatePost }: postUpdateProps
               variant="standard"
               value={`${updatePost?.id ?? ""}`}
             ></TextField>
-            <TextFieldController<IFormInputs>
+            <TextFieldController<IFormPostInputs>
               name={register("text").name}
               control={control}
               watch={watch}
               value={control._formValues.text}
               disabled={updatePost?.id ? false : true}
             />
-            {TextSelectController<IFormInputs>(
+            {TextSelectController<IFormPostInputs>(
               {
                 control: control,
                 name: register("color").name,

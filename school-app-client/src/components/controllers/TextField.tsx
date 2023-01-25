@@ -1,4 +1,4 @@
-import { TextField, TextFieldProps } from "@mui/material";
+import { TextField, TextFieldProps, FormHelperText } from "@mui/material";
 import React from "react";
 import {
   Controller,
@@ -18,10 +18,9 @@ export default function TextFieldController<F extends FieldValues>({
   watch,
   ...rest
 }: TextProps<F>) {
-  const path=`${name}` as Path<F>;
+  const path = `${name}` as Path<F>;
   const register = control?.register(path);
   const watchField = watch(path);
-
 
   return (
     <Controller
@@ -30,14 +29,15 @@ export default function TextFieldController<F extends FieldValues>({
       render={({ field, formState: { errors }, fieldState: { error } }) => (
         <TextField
           {...rest}
-          label="Text"
+          label={(name as string).toLocaleUpperCase()}
           variant="standard"
           maxRows={3}
           ref={field.ref}
           onChange={field.onChange}
           onBlur={field.onBlur}
-          helperText={error?.message}
-        />
+          helperText={error?.message ??"*"}
+          error
+        ></TextField>
       )}
     />
   );

@@ -32,7 +32,7 @@ import TextSelect from "../../../components/controllers/TextField";
 import TextFieldController from "../../../components/controllers/TextField";
 import TextSelectController from "../../../components/controllers/TextSelect";
 import { COLORTYPE, COLORTYPELIST } from "../../../constants";
-import { IFormInputs } from "../../../interfaces";
+import { IFormPostInputs } from "../../../interfaces";
 
 
 export default function PostCreate() {
@@ -60,12 +60,12 @@ export default function PostCreate() {
     .required();
 
   const { register, handleSubmit, control, watch, ...rest } =
-    useForm<IFormInputs>({
+    useForm<IFormPostInputs>({
       defaultValues: { text: "", color: Color.Blue },
       resolver: yupResolver(schema),
     });
 
-  const onSubmit = (data: IFormInputs) => {
+  const onSubmit = (data: IFormPostInputs) => {
     const saveInput: CreatePostInput = {
       color: data.color ?? Color.Blue,
       text: data.text,
@@ -77,7 +77,7 @@ export default function PostCreate() {
       },
     });
   };
-  const onInvalid: SubmitErrorHandler<IFormInputs> = (data) => {
+  const onInvalid: SubmitErrorHandler<IFormPostInputs> = (data) => {
     console.log(data);
   };
 
@@ -110,12 +110,12 @@ export default function PostCreate() {
               flexDirection: "column",
             }}
           >
-            <TextFieldController<IFormInputs>
+            <TextFieldController<IFormPostInputs>
               name={register("text").name}
               control={control}
               watch={watch}
             />
-            {TextSelectController<IFormInputs>(
+            {TextSelectController<IFormPostInputs>(
               { control: control, name: register("color").name },
               { labelArray: COLORTYPE, typeArray: COLORTYPELIST }
             )}

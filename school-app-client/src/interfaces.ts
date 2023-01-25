@@ -6,7 +6,12 @@ export interface alertProps {
   severity: "success" | "error" | "info" | "warning";
   open: boolean;
 }
-export interface IFormInputs extends FieldValues {
+export interface IFormPostInputs extends FieldValues {
   text: string;
   color: Color;
+}
+
+export interface IFormStudentInputs extends FieldValues {
+  name: string;
+  email: string;
 }
