@@ -55,16 +55,25 @@ describe('StudentService', () => {
 
   describe('getAllStudents', () => {
     it('should return an array', async () => {
-      const students = await studentService.getAllStudents();
+      const students = await studentService.getAllStudents({
+        limit: 10,
+        offset: 0,
+      });
       expect(students).toBeInstanceOf(Array);
     });
     it('should return students in db', async () => {
-      const students = await studentService.getAllStudents();
+      const students = await studentService.getAllStudents({
+        limit: 10,
+        offset: 0,
+      });
 
       expect(students).toEqual(await prismaService.student.findMany());
     });
     it('should order by id:asc', async () => {
-      await studentService.getAllStudents();
+      await studentService.getAllStudents({
+        limit: 10,
+        offset: 0,
+      });
       expect(prismaService.student.findMany).toHaveBeenLastCalledWith({
         orderBy: { id: 'asc' },
       });

@@ -11,12 +11,23 @@ datasource db {
 }
 
 model Student {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  Post  Post[]
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
+  name     String?
+  Post     Post[]
+  sendedMessages Message[] @relation(name: "sended")
+  receivedMessages Message[] @relation(name: "received")
 
   @@map("student")
+}
+
+model Message {
+  id                Int      @id @default(autoincrement())
+  title             String
+  receiverStudentId Int
+  senderStudentId   Int
+  senderStudent     Student  @relation(name: "sended", fields: [senderStudentId], references: [id])
+  reveiverStudent   Student  @relation(name: "received", fields: [receiverStudentId], references: [id])
 }
 
 model Post {

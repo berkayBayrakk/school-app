@@ -68,7 +68,7 @@ export class StudentService {
     const where: Prisma.StudentFindFirstArgs = {
       where: { ...(name ? { name: name } : { id: id }) },
     };
-
+    this.getAllStudents({});
     const cacheKey: CacheKey = {
       ...(!name
         ? { key: 'student', id: id }

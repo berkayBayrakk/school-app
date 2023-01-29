@@ -75,3 +75,4 @@ Nest is [MIT licensed](LICENSE).
 ## Docker
 
 docker-compose up -d --build
+npx prisma migrate dev
