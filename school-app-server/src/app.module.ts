@@ -12,6 +12,8 @@ import { join } from 'path';
 import { PostModule } from './post/post.module';
 import { StudentModule } from './student/student.module';
 import { RedisCacheModule } from './redis/redis.module';
+import { MessageModule } from './message/message.module';
+import { PubsubModule } from './pubSub/pubSub.module';
 
 @Module({
   imports: [
@@ -23,15 +25,15 @@ import { RedisCacheModule } from './redis/redis.module';
       },
       isGlobal: true,
     }),
+    PubsubModule,
+    MessageModule,
     PostModule,
     StudentModule,
     RedisCacheModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,
-      subscriptions: {
-        'graphql-ws': true,
-      },
+
       buildSchemaOptions: {
         numberScalarMode: 'integer',
         dateScalarMode: 'isoDate',

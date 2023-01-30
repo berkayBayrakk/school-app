@@ -2,11 +2,29 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Message {
+  id: Int!
+  title: String!
+  sendTime: DateTime!
+  receiverStudentId: Int!
+  senderStudentId: Int!
+  receiverStudent: Student!
+  senderStudent: Student!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Student implements IStudent {
   id: Int!
   email: String!
   name: String
   posts(offset: Int = 0, limit: Int = 10): [Post]!
+  sendedMessages: [Message]!
+  receivedMessages: [Message]!
+  sendedMessagesTo(toId: Int!): [Message]!
 }
 
 """Student interface"""
@@ -24,12 +42,8 @@ type Post {
   student: Student
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type Query {
+  message(id: Int!): Message!
   posts: [Post!]!
   post(id: Int!): Post!
   students(offset: Int = 0, limit: Int = 10): [Student!]!
@@ -43,11 +57,18 @@ input GetStudentInput {
 }
 
 type Mutation {
+  sendMessage(data: SendMessageInput!): Message!
   createPost(data: CreatePostInput!): Post!
   updatePost(data: UpdatePostInput!): Post!
   deletePost(id: Int!): Post!
   createStudent(data: CreateStudentInput!): Student!
   deleteStudent(id: Int!): Student!
+}
+
+input SendMessageInput {
+  title: String!
+  senderStudentId: Int!
+  receiverStudentId: Int!
 }
 
 input CreatePostInput {
@@ -72,4 +93,9 @@ input UpdatePostInput {
 input CreateStudentInput {
   email: String!
   name: String!
+}
+
+type Subscription {
+  messageSended(sender: Int!, receiver: Int!): Message!
+  messageSendedd: Message!
 }

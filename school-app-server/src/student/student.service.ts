@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { Injectable } from '@nestjs/common';
-import { Student, Post, Prisma } from '@prisma/client';
+import { Student, Post, Prisma, Message } from '@prisma/client';
 
 import { StudentFilterArgs } from './args/student.filter.args';
 import { CreateStudentInput } from './dto/createStudent.input';
@@ -51,10 +51,7 @@ export class StudentService {
     });
   }
 
-  async getAllStudents({
-    limit,
-    offset,
-  }: PaginationArgs): Promise<StudentModel[]> {
+  async getAllStudents({ limit, offset }: PaginationArgs): Promise<Student[]> {
     const students = await this.prisma.student.findMany({
       orderBy: { id: 'asc' },
       skip: offset,
@@ -102,7 +99,6 @@ export class StudentService {
     studentId: number,
     { limit, offset }: PaginationArgs,
   ): Promise<Post[]> {
-    console.log('studentId', studentId);
     const posts = await this.redisServices.get(
       { key: 'post:studentId', type: studentId.toString() },
       async () =>
@@ -111,14 +107,34 @@ export class StudentService {
           orderBy: { id: 'asc' },
         }),
     );
-
-    return posts.slice((offset - 1) * limit, offset * limit).map((post) => {
+    return posts.slice(offset * limit, offset + 1 * limit).map((post) => {
       return {
         ...post,
         createdAt: new Date(post.createdAt),
         updatedAt: new Date(post.updatedAt),
       };
     });
+  }
+
+  async getSendedMessageByStudentId(
+    senderStudentId: number,
+  ): Promise<Message[]> {
+    return await this.prisma.message.findMany({ where: { senderStudentId } });
+  }
+
+  async getSendedMessagesTo(
+    senderStudentId: number,
+    receiverStudentId: number,
+  ): Promise<Message[]> {
+    return await this.prisma.message.findMany({
+      where: { receiverStudentId, senderStudentId },
+    });
+  }
+
+  async getReceivedMessageByStudentId(
+    receiverStudentId: number,
+  ): Promise<Message[]> {
+    return await this.prisma.message.findMany({ where: { receiverStudentId } });
   }
 
   async deleteStudentById(studentId: number): Promise<Student> {
