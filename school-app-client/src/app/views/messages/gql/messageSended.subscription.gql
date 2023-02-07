@@ -1,0 +1,9 @@
+subscription MessageSended($sender:Int!,$receiver:Int!){
+    messageSended(sender:$sender,receiver:$receiver) {
+        id
+        title
+        sendTime
+        receiverStudentId
+        senderStudentId
+    }
+}

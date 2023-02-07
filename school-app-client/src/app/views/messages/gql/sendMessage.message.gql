@@ -1,0 +1,9 @@
+mutation sendMessage($data: SendMessageInput!){
+    sendMessage(data:$data) {
+        id
+        title
+        sendTime
+        receiverStudentId
+        senderStudentId
+    }
+}

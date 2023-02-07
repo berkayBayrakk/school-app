@@ -1,0 +1,11 @@
+query getSendedMessagesTo($data: GetStudentInput!, $receiverId: Int!) {
+  student(data: $data) {
+    sendedMessagesTo(toId: $receiverId) {
+      id
+      title
+      sendTime
+      receiverStudentId
+      senderStudentId
+    }
+  }
+}

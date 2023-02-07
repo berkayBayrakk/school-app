@@ -19,14 +19,6 @@ interface IFormInputs {
 export default function StudentForm() {
   const [createStudent, { loading, data, error }] = useCreateStudentMutation({
     refetchQueries: [{ query: GetStudentsWithoutPostsDocument }],
-
-    onCompleted(data) {
-      setAlert({
-        open: true,
-        message: `Student Created Name:${data.createStudent.name}`,
-        severity: "success",
-      });
-    },
   });
   const handleClose = () => {
     setAlert({ ...alert, open: false });
@@ -58,6 +50,11 @@ export default function StudentForm() {
         },
       },
     });
+    setAlert({
+      open: true,
+      message: `Student Created Name:${data.name}`,
+      severity: "success",
+    });
   };
 
   const onInvalid: SubmitErrorHandler<any> = (
@@ -80,7 +77,7 @@ export default function StudentForm() {
           borderRadius: 2,
           fontSize: "0.875rem",
           fontWeight: "700",
-          width:250
+          width: 250,
         }}
       >
         <form onSubmit={handleSubmit(onSubmit, onInvalid)}>

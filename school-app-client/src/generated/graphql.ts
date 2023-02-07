@@ -44,12 +44,24 @@ export type IStudent = {
   id: Scalars['Int'];
 };
 
+export type Message = {
+  __typename?: 'Message';
+  id: Scalars['Int'];
+  receiverStudent: Student;
+  receiverStudentId: Scalars['Int'];
+  sendTime: Scalars['DateTime'];
+  senderStudent: Student;
+  senderStudentId: Scalars['Int'];
+  title: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createPost: Post;
   createStudent: Student;
   deletePost: Post;
   deleteStudent: Student;
+  sendMessage: Message;
   updatePost: Post;
 };
 
@@ -74,6 +86,11 @@ export type MutationDeleteStudentArgs = {
 };
 
 
+export type MutationSendMessageArgs = {
+  data: SendMessageInput;
+};
+
+
 export type MutationUpdatePostArgs = {
   data: UpdatePostInput;
 };
@@ -91,11 +108,24 @@ export type Post = {
 
 export type Query = {
   __typename?: 'Query';
+  message: Message;
+  messageTwoStudent: Array<Message>;
   post: Post;
   posts: Array<Post>;
   student: Student;
   students: Array<Student>;
   studentsSearch: Array<Student>;
+};
+
+
+export type QueryMessageArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryMessageTwoStudentArgs = {
+  id1: Scalars['Int'];
+  id2: Scalars['Int'];
 };
 
 
@@ -123,12 +153,21 @@ export type QueryStudentsSearchArgs = {
   offset?: InputMaybe<Scalars['Int']>;
 };
 
+export type SendMessageInput = {
+  receiverStudentId: Scalars['Int'];
+  senderStudentId: Scalars['Int'];
+  title: Scalars['String'];
+};
+
 export type Student = IStudent & {
   __typename?: 'Student';
   email: Scalars['String'];
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
   posts: Array<Maybe<Post>>;
+  receivedMessages: Array<Maybe<Message>>;
+  sendedMessages: Array<Maybe<Message>>;
+  sendedMessagesTo: Array<Maybe<Message>>;
 };
 
 
@@ -137,11 +176,51 @@ export type StudentPostsArgs = {
   offset?: InputMaybe<Scalars['Int']>;
 };
 
+
+export type StudentSendedMessagesToArgs = {
+  toId: Scalars['Int'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  messageSended: Message;
+  messageSendedd: Message;
+};
+
+
+export type SubscriptionMessageSendedArgs = {
+  receiver: Scalars['Int'];
+  sender: Scalars['Int'];
+};
+
 export type UpdatePostInput = {
   color: Color;
   id?: InputMaybe<Scalars['Int']>;
   text: Scalars['String'];
 };
+
+export type MessageSendedSubscriptionVariables = Exact<{
+  sender: Scalars['Int'];
+  receiver: Scalars['Int'];
+}>;
+
+
+export type MessageSendedSubscription = { __typename?: 'Subscription', messageSended: { __typename?: 'Message', id: number, title: string, sendTime: any, receiverStudentId: number, senderStudentId: number } };
+
+export type GetMessagesTwoStudentQueryVariables = Exact<{
+  id1: Scalars['Int'];
+  id2: Scalars['Int'];
+}>;
+
+
+export type GetMessagesTwoStudentQuery = { __typename?: 'Query', messageTwoStudent: Array<{ __typename?: 'Message', id: number, title: string, sendTime: any, receiverStudentId: number, senderStudentId: number }> };
+
+export type SendMessageMutationVariables = Exact<{
+  data: SendMessageInput;
+}>;
+
+
+export type SendMessageMutation = { __typename?: 'Mutation', sendMessage: { __typename?: 'Message', id: number, title: string, sendTime: any, receiverStudentId: number, senderStudentId: number } };
 
 export type CreatePostMutationVariables = Exact<{
   data: CreatePostInput;
@@ -180,6 +259,14 @@ export type DeleteStudentByIdMutationVariables = Exact<{
 
 export type DeleteStudentByIdMutation = { __typename?: 'Mutation', deleteStudent: { __typename?: 'Student', id: number, email: string, name?: string | undefined } };
 
+export type GetSendedMessagesToQueryVariables = Exact<{
+  data: GetStudentInput;
+  receiverId: Scalars['Int'];
+}>;
+
+
+export type GetSendedMessagesToQuery = { __typename?: 'Query', student: { __typename?: 'Student', sendedMessagesTo: Array<{ __typename?: 'Message', id: number, title: string, sendTime: any, receiverStudentId: number, senderStudentId: number } | undefined> } };
+
 export type GetStudentWithoutPostsQueryVariables = Exact<{
   data: GetStudentInput;
 }>;
@@ -196,6 +283,118 @@ export type GetStudentsWithoutPostsQueryVariables = Exact<{
 export type GetStudentsWithoutPostsQuery = { __typename?: 'Query', students: Array<{ __typename?: 'Student', id: number, email: string, name?: string | undefined }> };
 
 
+export const MessageSendedDocument = gql`
+    subscription MessageSended($sender: Int!, $receiver: Int!) {
+  messageSended(sender: $sender, receiver: $receiver) {
+    id
+    title
+    sendTime
+    receiverStudentId
+    senderStudentId
+  }
+}
+    `;
+
+/**
+ * __useMessageSendedSubscription__
+ *
+ * To run a query within a React component, call `useMessageSendedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useMessageSendedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMessageSendedSubscription({
+ *   variables: {
+ *      sender: // value for 'sender'
+ *      receiver: // value for 'receiver'
+ *   },
+ * });
+ */
+export function useMessageSendedSubscription(baseOptions: Apollo.SubscriptionHookOptions<MessageSendedSubscription, MessageSendedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<MessageSendedSubscription, MessageSendedSubscriptionVariables>(MessageSendedDocument, options);
+      }
+export type MessageSendedSubscriptionHookResult = ReturnType<typeof useMessageSendedSubscription>;
+export type MessageSendedSubscriptionResult = Apollo.SubscriptionResult<MessageSendedSubscription>;
+export const GetMessagesTwoStudentDocument = gql`
+    query getMessagesTwoStudent($id1: Int!, $id2: Int!) {
+  messageTwoStudent(id1: $id1, id2: $id2) {
+    id
+    title
+    sendTime
+    receiverStudentId
+    senderStudentId
+  }
+}
+    `;
+
+/**
+ * __useGetMessagesTwoStudentQuery__
+ *
+ * To run a query within a React component, call `useGetMessagesTwoStudentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessagesTwoStudentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMessagesTwoStudentQuery({
+ *   variables: {
+ *      id1: // value for 'id1'
+ *      id2: // value for 'id2'
+ *   },
+ * });
+ */
+export function useGetMessagesTwoStudentQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesTwoStudentQuery, GetMessagesTwoStudentQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMessagesTwoStudentQuery, GetMessagesTwoStudentQueryVariables>(GetMessagesTwoStudentDocument, options);
+      }
+export function useGetMessagesTwoStudentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesTwoStudentQuery, GetMessagesTwoStudentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMessagesTwoStudentQuery, GetMessagesTwoStudentQueryVariables>(GetMessagesTwoStudentDocument, options);
+        }
+export type GetMessagesTwoStudentQueryHookResult = ReturnType<typeof useGetMessagesTwoStudentQuery>;
+export type GetMessagesTwoStudentLazyQueryHookResult = ReturnType<typeof useGetMessagesTwoStudentLazyQuery>;
+export type GetMessagesTwoStudentQueryResult = Apollo.QueryResult<GetMessagesTwoStudentQuery, GetMessagesTwoStudentQueryVariables>;
+export const SendMessageDocument = gql`
+    mutation sendMessage($data: SendMessageInput!) {
+  sendMessage(data: $data) {
+    id
+    title
+    sendTime
+    receiverStudentId
+    senderStudentId
+  }
+}
+    `;
+export type SendMessageMutationFn = Apollo.MutationFunction<SendMessageMutation, SendMessageMutationVariables>;
+
+/**
+ * __useSendMessageMutation__
+ *
+ * To run a mutation, you first call `useSendMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendMessageMutation, { data, loading, error }] = useSendMessageMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useSendMessageMutation(baseOptions?: Apollo.MutationHookOptions<SendMessageMutation, SendMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendMessageMutation, SendMessageMutationVariables>(SendMessageDocument, options);
+      }
+export type SendMessageMutationHookResult = ReturnType<typeof useSendMessageMutation>;
+export type SendMessageMutationResult = Apollo.MutationResult<SendMessageMutation>;
+export type SendMessageMutationOptions = Apollo.BaseMutationOptions<SendMessageMutation, SendMessageMutationVariables>;
 export const CreatePostDocument = gql`
     mutation CreatePost($data: CreatePostInput!) {
   createPost(data: $data) {
@@ -379,6 +578,48 @@ export function useDeleteStudentByIdMutation(baseOptions?: Apollo.MutationHookOp
 export type DeleteStudentByIdMutationHookResult = ReturnType<typeof useDeleteStudentByIdMutation>;
 export type DeleteStudentByIdMutationResult = Apollo.MutationResult<DeleteStudentByIdMutation>;
 export type DeleteStudentByIdMutationOptions = Apollo.BaseMutationOptions<DeleteStudentByIdMutation, DeleteStudentByIdMutationVariables>;
+export const GetSendedMessagesToDocument = gql`
+    query getSendedMessagesTo($data: GetStudentInput!, $receiverId: Int!) {
+  student(data: $data) {
+    sendedMessagesTo(toId: $receiverId) {
+      id
+      title
+      sendTime
+      receiverStudentId
+      senderStudentId
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSendedMessagesToQuery__
+ *
+ * To run a query within a React component, call `useGetSendedMessagesToQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSendedMessagesToQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSendedMessagesToQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *      receiverId: // value for 'receiverId'
+ *   },
+ * });
+ */
+export function useGetSendedMessagesToQuery(baseOptions: Apollo.QueryHookOptions<GetSendedMessagesToQuery, GetSendedMessagesToQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSendedMessagesToQuery, GetSendedMessagesToQueryVariables>(GetSendedMessagesToDocument, options);
+      }
+export function useGetSendedMessagesToLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSendedMessagesToQuery, GetSendedMessagesToQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSendedMessagesToQuery, GetSendedMessagesToQueryVariables>(GetSendedMessagesToDocument, options);
+        }
+export type GetSendedMessagesToQueryHookResult = ReturnType<typeof useGetSendedMessagesToQuery>;
+export type GetSendedMessagesToLazyQueryHookResult = ReturnType<typeof useGetSendedMessagesToLazyQuery>;
+export type GetSendedMessagesToQueryResult = Apollo.QueryResult<GetSendedMessagesToQuery, GetSendedMessagesToQueryVariables>;
 export const GetStudentWithoutPostsDocument = gql`
     query getStudentWithoutPosts($data: GetStudentInput!) {
   student(data: $data) {

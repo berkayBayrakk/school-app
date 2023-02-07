@@ -1,0 +1,9 @@
+query getMessagesTwoStudent($id1: Int!, $id2: Int!) {
+  messageTwoStudent(id1: $id1, id2: $id2) {
+    id
+    title
+    sendTime
+    receiverStudentId
+    senderStudentId
+  }
+}
